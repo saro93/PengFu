@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Engine.h"
 #include "Components/TimelineComponent.h"
@@ -84,13 +85,15 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 
 		DrawDebugLine(GetWorld(), StartTraceSurface, EndSurfaceTrace, FColor::Silver,false,1);
 
-		if (bHitSurface) 
+		if (bHitSurface && HitResultSurfaceDetection.PhysMaterial != nullptr)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("The Sur is: "));
 			if (HitResultSurfaceDetection.PhysMaterial->SurfaceType == SurfaceType2)
 			{
 				Character->bIsSwimming = true;
-				UE_LOG(LogTemp, Warning, TEXT("The Surface is: %s"), HitResultSurfaceDetection.PhysMaterial->SurfaceType);
+			}
+			else {
+				Character->bIsSwimming = false;
 			}
 		}
 
