@@ -42,6 +42,9 @@ public:
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsSlide;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+		bool bIsSwim;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
 		meta = (AllowPrivateAccess = "true"))
 		bool bJump;

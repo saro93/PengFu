@@ -32,6 +32,7 @@ void UAnimInstance_PengFu::UpdateAnimationProperties(float DeltaTime)
 		bIsFall = PlayerCharacter->GetCharacterMovement()->IsFalling();
 		LeanSlideValue = PlayerCharacter->LeanSlideDelta;
 		bIsLoadingJump = PlayerCharacter->bLoadJump;
+		bIsSwim = PlayerCharacter->bIsSwimming;
 
 		SlideTraceUp = PlayerCharacter->CollisionComp->FloorAngleUp;
 		SlideTraceLow = PlayerCharacter->CollisionComp->FloorAngleLow;

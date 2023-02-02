@@ -6,6 +6,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Engine/World.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Engine.h"
 #include "Components/TimelineComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -70,6 +71,28 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 	SlidingTime.TickTimeline(DeltaTime);
 
 	if (Character) {
+
+		FHitResult HitResultSurfaceDetection;
+		FCollisionResponseParams ResponseSurface;
+		FVector StartTraceSurface = Character->GetActorLocation();
+		FVector EndSurfaceTrace = StartTraceSurface + FVector(0, 0, -65);
+		FCollisionQueryParams TraceSurfaceParams(FName(TEXT("TraceCharacter_SurfaceDetection")), true, Character);
+		TraceSurfaceParams.bReturnPhysicalMaterial = true;
+		TraceSurfaceParams.AddIgnoredActor(Character);
+
+		bool bHitSurface = GetWorld()->LineTraceSingleByChannel(HitResultSurfaceDetection, StartTraceSurface, EndSurfaceTrace, ECollisionChannel::ECC_Visibility, TraceSurfaceParams, ResponseSurface);
+
+		DrawDebugLine(GetWorld(), StartTraceSurface, EndSurfaceTrace, FColor::Silver,false,1);
+
+		if (bHitSurface) 
+		{
+			UE_LOG(LogTemp, Warning, TEXT("The Sur is: "));
+			if (HitResultSurfaceDetection.PhysMaterial->SurfaceType == SurfaceType2)
+			{
+				Character->bIsSwimming = true;
+				UE_LOG(LogTemp, Warning, TEXT("The Surface is: %s"), HitResultSurfaceDetection.PhysMaterial->SurfaceType);
+			}
+		}
 
 		if (Character->bIsSliding) {
 

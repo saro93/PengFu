@@ -59,6 +59,7 @@ APengFu_PlayerCharacter::APengFu_PlayerCharacter()
 	JumpCount = 0;
 	bEquip=false;
 	bClubInInvenctory = false;
+	bIsSwimming = false;
 
 	speedLying = 300;
 

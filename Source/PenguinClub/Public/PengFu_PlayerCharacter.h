@@ -79,6 +79,9 @@ public:
 		bool bLoadJump;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+		bool bIsSwimming;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
 		int JumpCount;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Movement")
