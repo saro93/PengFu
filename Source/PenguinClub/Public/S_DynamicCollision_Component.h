@@ -20,6 +20,8 @@ public:
 
 	FTimeline SlidingTime;
 
+	FTimeline JumpingTime;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float DefaultCapsuleHalfHeight;
 
@@ -33,10 +35,19 @@ public:
 		FVector SlidingMeshLocation = FVector(-40, 0, -100);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
+		FVector JumpingMeshLocation;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float SlidingCapsuleHalfHeight = 40.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
+		float JumpingCapsuleHalfHeight = 56.25f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float SlidingCapsuleRadius = 40;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
+		float JumpingCapsuleRadius = 20.5f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float FloorAngleUp;
@@ -60,6 +71,8 @@ public:
 
 	APengFu_PlayerCharacter* Character;
 
+
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -72,9 +85,13 @@ public:
 
 private:
 	UFUNCTION()
-		void ActionUpdate(float Alpha);
+		void SlideUpdate(float Alpha);
+
+	UFUNCTION()
+		void JumpUpdate(float Alpha);
 
 	UFUNCTION()
 		void ActionFinish();
 		
+	bool bFallingState;
 };

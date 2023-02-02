@@ -55,7 +55,7 @@ void US_Action_PrimaryAttack::StartAction_Implementation(AActor* InstigatorActor
 						Character->bPrimaryAttack = false;
 						GetWorld()->GetTimerManager().ClearTimer(TimerHandle_AttackDelay);
 						GetWorld()->GetTimerManager().ClearTimer(TimerNextAttack);
-						GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackDelay, Delegate, 0.2, false);
+						GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackDelay, Delegate, 0.3, false);
 						GetWorld()->GetTimerManager().SetTimer(TimerNextAttack, DelegateNextAttack, 0.10, false);
 						if (AnimInstance)
 						{
@@ -118,7 +118,7 @@ void US_Action_PrimaryAttack::PrimaryAttack_TimerElapsed(AActor* InstigatorActor
 	else {
 		UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
 		if (AnimInstance) {
-			AnimInstance->Montage_Stop(0.2, Character->AttackClub_Montage);
+			AnimInstance->Montage_Stop(0.1, Character->AttackClub_Montage);
 			Character->bPrimaryAttack = false;
 			
 		}

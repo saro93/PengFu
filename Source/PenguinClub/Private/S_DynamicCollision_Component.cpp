@@ -24,6 +24,10 @@ US_DynamicCollision_Component::US_DynamicCollision_Component()
 	DefaultMeshLocation = FVector(0.f, 0.f, -60.f);
 
 	SlidingMeshLocation = FVector(-15, 0, -40);
+
+	JumpingMeshLocation = FVector(0, 0, -80);
+
+	bFallingState = false;
 	// ...
 }
 
@@ -34,14 +38,23 @@ void US_DynamicCollision_Component::BeginPlay()
 	Super::BeginPlay();
 
 	// Syestem for change the capsule size in accord of the animation slide
-		FOnTimelineFloat ProgressUpdate;
-		ProgressUpdate.BindUFunction(this, FName("ActionUpdate"));
+		FOnTimelineFloat Sliding_Update;
+		Sliding_Update.BindUFunction(this, FName("SlideUpdate"));
 
-		FOnTimelineEvent FinishedEvent;
-		FinishedEvent.BindUFunction(this, FName("ActionFinish"));
+		FOnTimelineFloat Jumping_Update;
+		Jumping_Update.BindUFunction(this, FName("JumpUpdate"));
 
-		SlidingTime.AddInterpFloat(SlidingCurve, ProgressUpdate);
-		SlidingTime.SetTimelineFinishedFunc(FinishedEvent);
+		FOnTimelineEvent SlideFinishedEvent;
+		SlideFinishedEvent.BindUFunction(this, FName("ActionFinish"));
+		
+		FOnTimelineEvent JumpFinishedEvent;
+		JumpFinishedEvent.BindUFunction(this, FName("ActionFinish"));
+
+		SlidingTime.AddInterpFloat(SlidingCurve, Sliding_Update);
+		SlidingTime.SetTimelineFinishedFunc(SlideFinishedEvent);
+
+		JumpingTime.AddInterpFloat(SlidingCurve, Jumping_Update);
+		JumpingTime.SetTimelineFinishedFunc(JumpFinishedEvent);
 
 		Character = Cast<APengFu_PlayerCharacter>(GetOwner());
 
@@ -53,11 +66,11 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	JumpingTime.TickTimeline(DeltaTime);
 	SlidingTime.TickTimeline(DeltaTime);
-	// ...
-
 
 	if (Character) {
+
 		if (Character->bIsSliding) {
 
 			FName UpperBone = "Spine_2";
@@ -81,30 +94,12 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 
 			if (bHitLower)
 			{
-
-				// Get the normal of the floor at the player's location
-				//FVector FloorNormalUp = HitResultUp.ImpactNormal;
-				//UE_LOG(LogTemp, Warning, TEXT("The NormalUp value is: %f"), FloorNormalUp.X);
-
-				// Get the angle of the floor
-				//FloorAngleUp = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(FVector(0, 0, 1), FloorNormalUp)));
-				//UE_LOG(LogTemp, Warning, TEXT("The AngleUp value is: %f"), FloorAngleUp);
-
 				// Get the normal of the floor at the player's location
 				FVector FloorNormal = HitResultLow.ImpactNormal;
 				//UE_LOG(LogTemp, Warning, TEXT("The NormalUp value is: %f"), FloorNormal.X);
 
 				// Get the angle of the floor
 				FloorAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(FVector(0, 0, 1), FloorNormal)));
-				//UE_LOG(LogTemp, Warning, TEXT("The AngleUp value is: %f"), FloorAngle);
-
-				// Get the normal of the floor at the player's location
-				//FVector FloorNormalLow = HitResultLow.ImpactNormal;
-				//UE_LOG(LogTemp, Warning, TEXT("The NormalLow value is: %f"), FloorNormalLow.X);
-
-				// Get the angle of the floor
-				//FloorAngleLow = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(FVector(0, 0, 1), FloorNormalLow)));
-				//UE_LOG(LogTemp, Warning, TEXT("The AngleLow value is: %f"), FloorAngleLow);
 
 				CharacterLocation = Character->GetActorLocation();
 
@@ -142,17 +137,10 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 				Character->GetMesh()->SetRelativeRotation(InterpolatedRotation);
 				Character->GetMesh()->SetRelativeLocation(InterpolationLocation);
 				
-
 				PreviousCharacterLocation = CharacterLocation;
-
-				//DrawDebugLine(GetWorld(), UpperLocation, HitResultUp.Location, FColor::Red, false, -1, 0, 12.000);
-				//DrawDebugPoint(GetWorld(), HitResultUp.Location, 5.f, FColor::Green, false, 2.f);
-
-				//DrawDebugLine(GetWorld(), LowerLocation, HitResultLow.Location, FColor::Red, false, -1, 0, 12.000);
-				//DrawDebugPoint(GetWorld(), HitResultLow.Location, 5.f, FColor::Green, false, 2.f);
 			}
 		}
-		else if (Character->GetMesh()->GetRelativeRotation() != FRotator(0, -90, 0))
+		else if (Character->GetMesh()->GetRelativeRotation() != FRotator(0, -90, 0) && !Character->GetCharacterMovement()->IsFalling())
 		{
 			NewRotation = FRotator(0, -90, 0);
 			FRotator InterpolatedRotation = FMath::RInterpTo(Character->GetMesh()->GetRelativeRotation(), NewRotation, DeltaTime, 10);
@@ -161,9 +149,14 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 			Character->GetMesh()->SetRelativeLocation(InterpolationLocation);
 		}
 	}
+    
+	if (!Character->GetCharacterMovement()->IsFalling() && !Character->bIsSliding)
+	{
+		JumpingTime.Reverse();
+	}
 }
 
-void US_DynamicCollision_Component::ActionUpdate(float Alpha)
+void US_DynamicCollision_Component::SlideUpdate(float Alpha)
 {
 	if (Character)
 	{
@@ -178,10 +171,22 @@ void US_DynamicCollision_Component::ActionUpdate(float Alpha)
 	}
 }
 
+void US_DynamicCollision_Component::JumpUpdate(float Alpha)
+{
+	if (Character)
+	{
+		float NewHalfHeight = FMath::Lerp(DefaultCapsuleHalfHeight, JumpingCapsuleHalfHeight, Alpha);
+		Character->GetCapsuleComponent()->SetCapsuleHalfHeight(NewHalfHeight);
+
+		float NewRadius = FMath::Lerp(DefaultCapsuleRadius, JumpingCapsuleRadius, Alpha);
+		Character->GetCapsuleComponent()->SetCapsuleRadius(NewRadius);
+
+		FVector LocationMesh = FMath::Lerp(DefaultMeshLocation, JumpingMeshLocation, Alpha);
+		Character->GetMesh()->SetRelativeLocation(LocationMesh);
+	}
+}
+
 void US_DynamicCollision_Component::ActionFinish()
 {
-
-
-
 }
 

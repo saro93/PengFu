@@ -3,6 +3,7 @@
 
 #include "S_Action_Jump.h"
 #include "PengFu_PlayerCharacter.h"
+#include "S_DynamicCollision_Component.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 US_Action_Jump::US_Action_Jump() 
@@ -54,6 +55,8 @@ void US_Action_Jump::StopAction_Implementation(AActor* InstigatorActor)
 				Character->JumpCount += 1;
 				GetWorld()->GetTimerManager().ClearTimer(TimerTrigger_Jump);
 				Character->LaunchCharacter(FVector(0, 0, 750), false, false);
+				Character->CollisionComp->JumpingTime.Play();
+
 			}
 			else if (Character->bBoostLoad)
 			{
@@ -78,5 +81,5 @@ void US_Action_Jump::Jump_TimerElapsed(AActor* InstigatorActor)
 
 		Character->JumpCount += 1;
 		Character->LaunchCharacter(FVector(0, 0, 1000), false, false);
-	
+		Character->CollisionComp->JumpingTime.Play();
 }
