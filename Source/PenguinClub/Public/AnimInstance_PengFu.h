@@ -54,6 +54,10 @@ public:
 		meta = (AllowPrivateAccess = "true"))
 		bool bIsFall;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+		meta = (AllowPrivateAccess = "true"))
+		float LeanSlideValue;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 		bool bBoostSlide;
 

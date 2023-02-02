@@ -30,7 +30,7 @@ void UAnimInstance_PengFu::UpdateAnimationProperties(float DeltaTime)
 		bWeaponEquipped = PlayerCharacter->bEquip;
 		bBoostSlide = PlayerCharacter->bBoostLoad;
 		bIsFall = PlayerCharacter->GetCharacterMovement()->IsFalling();
-
+		LeanSlideValue = PlayerCharacter->LeanSlideDelta;
 		bIsLoadingJump = PlayerCharacter->bLoadJump;
 
 		SlideTraceUp = PlayerCharacter->CollisionComp->FloorAngleUp;

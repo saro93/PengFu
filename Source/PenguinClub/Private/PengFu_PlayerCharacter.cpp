@@ -60,7 +60,7 @@ APengFu_PlayerCharacter::APengFu_PlayerCharacter()
 	bEquip=false;
 	bClubInInvenctory = false;
 
-	speedLying = 500;
+	speedLying = 300;
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
@@ -94,12 +94,13 @@ void APengFu_PlayerCharacter::MoveForward(float Value)
 		ControlRot.Roll = 0.0f;
 		AddMovementInput(ControlRot.Vector(), Value);
 	}
-	else if(!bBoostLoad && GetCharacterMovement()->GetLastUpdateVelocity().Size() != 0){
+	else if(!bBoostLoad && GetCharacterMovement()->GetLastUpdateVelocity().Size() <= 300)
+	{
 		FRotator ControlRot = GetControlRotation();
 		ControlRot.Pitch = 0.0f;
 		ControlRot.Roll = 0.0f;
-		AddMovementInput(ControlRot.Vector(), Value*0.5f);
-		GetCharacterMovement()->MaxWalkSpeed = 0;
+		AddMovementInput(ControlRot.Vector(), Value);
+		GetCharacterMovement()->MaxWalkSpeed = speedLying;
 	}
 }
 
@@ -111,19 +112,30 @@ void APengFu_PlayerCharacter::MoveRight(float Value)
 		FRotator ControlRot = GetControlRotation();
 		ControlRot.Pitch = 0.0f;
 		ControlRot.Roll = 0.0f;
-
+		GetCharacterMovement()->bOrientRotationToMovement = true;
 		FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 		AddMovementInput(RightVector, Value);
 	}
-	else if(!bBoostLoad && GetCharacterMovement()->GetLastUpdateVelocity().Size() != 0 ) 
+	else if(!bBoostLoad && GetCharacterMovement()->GetLastUpdateVelocity().Size() <= 300 ) 
 	{
 		FRotator ControlRot = GetControlRotation();
 		ControlRot.Pitch = 0.0f;
 		ControlRot.Roll = 0.0f;
-
+		GetCharacterMovement()->bOrientRotationToMovement = true;
 		FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 		AddMovementInput(RightVector, Value);
+		GetCharacterMovement()->MaxWalkSpeed = speedLying;
+	}
+	else if (!bBoostLoad && GetCharacterMovement()->GetLastUpdateVelocity().Size() > 300) 
+	{
+		LeanSlideDelta = Value;
+		FRotator ControlRot = GetControlRotation();
+		ControlRot.Pitch = 0.0f;
+		ControlRot.Roll = 0.0f;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		FVector RightVector = FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y);
 		GetCharacterMovement()->MaxWalkSpeed = 0;
+		AddMovementInput(RightVector, Value * 0.1);
 	}
 
 }

@@ -81,6 +81,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Movement")
 		int JumpCount;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+        float LeanSlideDelta;
+
         AS_Tool* EquippedWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
