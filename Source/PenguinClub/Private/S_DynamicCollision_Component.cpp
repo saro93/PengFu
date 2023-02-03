@@ -29,7 +29,7 @@ US_DynamicCollision_Component::US_DynamicCollision_Component()
 
 	JumpingMeshLocation = FVector(0, 0, -80);
 
-	bFallingState = false;
+	SwimmingMeshLocation = FVector(0,1,-35);
 	// ...
 }
 
@@ -46,17 +46,26 @@ void US_DynamicCollision_Component::BeginPlay()
 		FOnTimelineFloat Jumping_Update;
 		Jumping_Update.BindUFunction(this, FName("JumpUpdate"));
 
+		FOnTimelineFloat Swimming_Update;
+		Swimming_Update.BindUFunction(this, FName("SwimUpdate"));
+
 		FOnTimelineEvent SlideFinishedEvent;
 		SlideFinishedEvent.BindUFunction(this, FName("ActionFinish"));
 		
 		FOnTimelineEvent JumpFinishedEvent;
 		JumpFinishedEvent.BindUFunction(this, FName("ActionFinish"));
 
+		FOnTimelineEvent SwimFinishedEvent;
+		SwimFinishedEvent.BindUFunction(this, FName("ActionFinish"));
+
 		SlidingTime.AddInterpFloat(SlidingCurve, Sliding_Update);
 		SlidingTime.SetTimelineFinishedFunc(SlideFinishedEvent);
 
 		JumpingTime.AddInterpFloat(SlidingCurve, Jumping_Update);
 		JumpingTime.SetTimelineFinishedFunc(JumpFinishedEvent);
+
+		SwimmingTime.AddInterpFloat(SlidingCurve, Swimming_Update);
+		SwimmingTime.SetTimelineFinishedFunc(SwimFinishedEvent);
 
 		Character = Cast<APengFu_PlayerCharacter>(GetOwner());
 
@@ -70,9 +79,17 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 
 	JumpingTime.TickTimeline(DeltaTime);
 	SlidingTime.TickTimeline(DeltaTime);
+	SwimmingTime.TickTimeline(DeltaTime);
 
 	if (Character) {
 
+
+		if (!Character->GetCharacterMovement()->IsFalling() && !Character->bIsSliding && !Character->bIsSwimming)
+		{
+			JumpingTime.Reverse();
+		}
+
+		// SURFACE MATERIAL DETECTION
 		FHitResult HitResultSurfaceDetection;
 		FCollisionResponseParams ResponseSurface;
 		FVector StartTraceSurface = Character->GetActorLocation();
@@ -83,7 +100,7 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 
 		bool bHitSurface = GetWorld()->LineTraceSingleByChannel(HitResultSurfaceDetection, StartTraceSurface, EndSurfaceTrace, ECollisionChannel::ECC_Visibility, TraceSurfaceParams, ResponseSurface);
 
-		DrawDebugLine(GetWorld(), StartTraceSurface, EndSurfaceTrace, FColor::Silver,false,1);
+		//DrawDebugLine(GetWorld(), StartTraceSurface, EndSurfaceTrace, FColor::Silver,false,1);
 
 		if (bHitSurface && HitResultSurfaceDetection.PhysMaterial != nullptr)
 		{
@@ -91,23 +108,21 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 			if (HitResultSurfaceDetection.PhysMaterial->SurfaceType == SurfaceType2)
 			{
 				Character->bIsSwimming = true;
+				SwimmingTime.Play();
 			}
-			else {
+			else if(!Character->GetCharacterMovement()->IsFalling() && !Character->bIsSliding && !SlidingTime.IsPlaying() && !JumpingTime.IsReversing()) {
 				Character->bIsSwimming = false;
+				SwimmingTime.Reverse();
 			}
 		}
 
+		//MESH ROTATION BASED ON FLOOR ANGLE WHEN SLIDING
 		if (Character->bIsSliding) {
 
-			FName UpperBone = "Spine_2";
 			FName LowerBone = "TraceLow_Loc";
 
-			// Get the player's current location
-			//FVector UpperLocation = Character->GetMesh()->GetBoneLocation(UpperBone);
 			FVector LowerLocation = Character->GetMesh()->GetSocketLocation(LowerBone) + FVector(0,0,20);
 
-			// Trace a line down from the player's location to the floor
-			//FHitResult HitResultUp; // trace UpperBody
 			FHitResult HitResultLow; // Trace LowerBody
 
 			FCollisionQueryParams TraceParams(FName(TEXT("UpperBody_FloorTrace")), true, Character);
@@ -115,7 +130,6 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 			TraceParams.bReturnPhysicalMaterial = false;
 			TraceParams.AddIgnoredActor(Character);
 
-			//bool bHitUpper = GetWorld()->LineTraceSingleByChannel(HitResultUp, UpperLocation, UpperLocation + FVector(0, 0, -1000), ECC_Visibility, TraceParams);
 			bool bHitLower = GetWorld()->LineTraceSingleByChannel(HitResultLow, LowerLocation, LowerLocation + FVector(0, 0, -1000), ECC_Visibility, TraceParams);
 
 			if (bHitLower)
@@ -166,7 +180,7 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 				PreviousCharacterLocation = CharacterLocation;
 			}
 		}
-		else if (Character->GetMesh()->GetRelativeRotation() != FRotator(0, -90, 0) && !Character->GetCharacterMovement()->IsFalling())
+		else if (Character->GetMesh()->GetRelativeRotation() != FRotator(0, -90, 0) && !Character->GetCharacterMovement()->IsFalling() && !Character->bIsSwimming)
 		{
 			NewRotation = FRotator(0, -90, 0);
 			FRotator InterpolatedRotation = FMath::RInterpTo(Character->GetMesh()->GetRelativeRotation(), NewRotation, DeltaTime, 10);
@@ -174,11 +188,6 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 			Character->GetMesh()->SetRelativeRotation(InterpolatedRotation);
 			Character->GetMesh()->SetRelativeLocation(InterpolationLocation);
 		}
-	}
-    
-	if (!Character->GetCharacterMovement()->IsFalling() && !Character->bIsSliding)
-	{
-		JumpingTime.Reverse();
 	}
 }
 
@@ -208,6 +217,21 @@ void US_DynamicCollision_Component::JumpUpdate(float Alpha)
 		Character->GetCapsuleComponent()->SetCapsuleRadius(NewRadius);
 
 		FVector LocationMesh = FMath::Lerp(DefaultMeshLocation, JumpingMeshLocation, Alpha);
+		Character->GetMesh()->SetRelativeLocation(LocationMesh);
+	}
+}
+
+void US_DynamicCollision_Component::SwimUpdate(float Alpha)
+{
+	if (Character) 
+	{
+		float NewHalfHeight = FMath::Lerp(DefaultCapsuleHalfHeight, SwimmingCapsuleHalfHeight, Alpha);
+		Character->GetCapsuleComponent()->SetCapsuleHalfHeight(NewHalfHeight);
+
+		float NewRadius = FMath::Lerp(DefaultCapsuleRadius, SwimmingCapsuleRadius, Alpha);
+		Character->GetCapsuleComponent()->SetCapsuleRadius(NewRadius);
+
+		FVector LocationMesh = FMath::Lerp(DefaultMeshLocation, SwimmingMeshLocation, Alpha);
 		Character->GetMesh()->SetRelativeLocation(LocationMesh);
 	}
 }

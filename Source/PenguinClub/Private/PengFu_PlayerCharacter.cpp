@@ -44,6 +44,10 @@ APengFu_PlayerCharacter::APengFu_PlayerCharacter()
 
 	GetMesh()->SetupAttachment(RootComponent);
 
+	CollisionMesh = CreateDefaultSubobject<UBoxComponent>(TEXT("SwimCollisionBox"));
+
+	CollisionMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Root"));
+
 	InteractionComp = CreateDefaultSubobject<US_InteractableComponent>(TEXT("InteractionComponent"));
 	AttributeComp = CreateDefaultSubobject<US_AttributeComponent>(TEXT("AttributeComp"));
 	ActionComp = CreateDefaultSubobject<US_ActionComponent>(TEXT("ActionComp"));

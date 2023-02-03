@@ -18,7 +18,7 @@ void US_Action_Slide::StartAction_Implementation(AActor* InstigatorActor)
 
 	if (Character)
 	{
-		if (!Character->GetCharacterMovement()->IsFalling()) {
+		if (!Character->GetCharacterMovement()->IsFalling() && !Character->bIsSwimming) {
 			Character->CollisionComp->SlidingTime.Play();
 			Character->bIsSliding = true;
 			//Character->GetCharacterMovement()->GroundFriction = 0.f;
@@ -38,11 +38,14 @@ void US_Action_Slide::StopAction_Implementation(AActor* InstigatorActor)
 
 	if (Character)
 	{
-		Character->CollisionComp->SlidingTime.Reverse();
-		Character->bIsSliding = false;
-		//Character->GetCharacterMovement()->GroundFriction = 8.f;
-		//Character->GetCharacterMovement()->BrakingDecelerationWalking = 2048.f;
-		//Character->GetCharacterMovement()->MaxWalkSpeed = 600;
+		if (!Character->bIsSwimming) 
+		{
+			Character->CollisionComp->SlidingTime.Reverse();
+			Character->bIsSliding = false;
+			//Character->GetCharacterMovement()->GroundFriction = 8.f;
+			//Character->GetCharacterMovement()->BrakingDecelerationWalking = 2048.f;
+			//Character->GetCharacterMovement()->MaxWalkSpeed = 600;
+		}
 	}
 
 	

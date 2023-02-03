@@ -13,6 +13,7 @@ class US_InteractableComponent;
 class US_AttributeComponent;
 class US_ActionComponent;
 class US_DynamicCollision_Component;
+class UBoxComponent;
 
 UCLASS()
 class PENGUINCLUB_API APengFu_PlayerCharacter : public ACharacter
@@ -48,6 +49,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		US_DynamicCollision_Component* CollisionComp;
 
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "CollisionSwim",
+		meta = (AllowPrivateAccess = "True"))
+		UBoxComponent* CollisionMesh;
 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")

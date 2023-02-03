@@ -22,6 +22,8 @@ public:
 
 	FTimeline JumpingTime;
 
+	FTimeline SwimmingTime;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float DefaultCapsuleHalfHeight;
 
@@ -38,16 +40,25 @@ public:
 		FVector JumpingMeshLocation;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
+		FVector SwimmingMeshLocation;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float SlidingCapsuleHalfHeight = 40.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float JumpingCapsuleHalfHeight = 56.25f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
+		float SwimmingCapsuleHalfHeight = 10.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float SlidingCapsuleRadius = 40;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float JumpingCapsuleRadius = 20.5f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
+		float SwimmingCapsuleRadius = 10;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		float FloorAngleUp;
@@ -91,7 +102,9 @@ private:
 		void JumpUpdate(float Alpha);
 
 	UFUNCTION()
+		void SwimUpdate(float Alpha);
+
+	UFUNCTION()
 		void ActionFinish();
 		
-	bool bFallingState;
 };
