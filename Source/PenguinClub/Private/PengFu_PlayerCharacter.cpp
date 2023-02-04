@@ -8,6 +8,7 @@
 #include "Engine/EngineTypes.h"
 #include "Components/TimelineComponent.h"
 #include "Components/SphereComponent.h"
+#include "S_Bringable_Box.h"
 #include "PhysicsEngine/PhysicsSettings.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Actor.h"
@@ -64,6 +65,8 @@ APengFu_PlayerCharacter::APengFu_PlayerCharacter()
 	bEquip=false;
 	bClubInInvenctory = false;
 	bIsSwimming = false;
+	bObjectTaken = false;
+	bIsBringingObject = false;
 
 	speedLying = 300;
 
@@ -231,6 +234,17 @@ void APengFu_PlayerCharacter::JumpStop()
 	ActionComp->StopActionByName(this, "Jump");
 }
 
+void APengFu_PlayerCharacter::LeaveBox()
+{
+	if (bObjectTaken) 
+	{
+		BoxTaken->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		bObjectTaken = false;
+		BoxTaken->SetActorEnableCollision(true);
+		BoxTaken->GetItemMesh()->SetSimulatePhysics(true);
+	}
+}
+
 void APengFu_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -252,6 +266,7 @@ void APengFu_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &APengFu_PlayerCharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &APengFu_PlayerCharacter::JumpStop);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &APengFu_PlayerCharacter::PrimaryInteract);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &APengFu_PlayerCharacter::LeaveBox);
 	PlayerInputComponent->BindAction("PickUp", IE_Pressed, this, &APengFu_PlayerCharacter::PickUpObjects);
 }
 

@@ -5,6 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "DrawDebugHelpers.h"
 #include "SGamePlayInterface.h"
+#include "PengFu_PlayerCharacter.h"
 #include "S_WorldUserWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("su.InteractionDebugDraw"), false, TEXT("Enable Debug Lines for Interact Component."), ECVF_Cheat);
@@ -87,20 +88,27 @@ void US_InteractableComponent::FindBestInteractable()
 
 	if (FocusedActor)
 	{
-		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
-		{
-			DefaultWidgetInstance = CreateWidget<US_WorldUserWidget>(GetWorld(), DefaultWidgetClass);
-		}
-
-		if (DefaultWidgetInstance)
-		{
-			DefaultWidgetInstance->AttachedActor = FocusedActor;
-
-			if (!DefaultWidgetInstance->IsInViewport())
+		if (APengFu_PlayerCharacter* Char = Cast<APengFu_PlayerCharacter>(MyPawn)) {
+			
+			if(!Char->bObjectTaken)
 			{
-				DefaultWidgetInstance->AddToViewport();
+				if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+				{
+					DefaultWidgetInstance = CreateWidget<US_WorldUserWidget>(GetWorld(), DefaultWidgetClass);
+				}
+
+				if (DefaultWidgetInstance)
+				{
+					DefaultWidgetInstance->AttachedActor = FocusedActor;
+
+					if (!DefaultWidgetInstance->IsInViewport())
+					{
+						DefaultWidgetInstance->AddToViewport();
+					}
+				}
 			}
 		}
+		
 	}
 	else
 	{
@@ -124,11 +132,16 @@ void US_InteractableComponent::FindBestInteractable()
 void US_InteractableComponent::PrimaryInteract()
 {
 	if (FocusedActor == nullptr) { GEngine->AddOnScreenDebugMessage(-1,1.f,FColor::Red,"No Focus Actor to Interact"); return; }
+	if (APengFu_PlayerCharacter* Char = Cast<APengFu_PlayerCharacter>(MyPawn)) {
 
-	MyPawn = Cast<APawn>(GetOwner());
+		if (!Char->bObjectTaken)
+		{
+			MyPawn = Cast<APawn>(GetOwner());
 
-	ISGamePlayInterface::Execute_Interact(FocusedActor, MyPawn);
+			ISGamePlayInterface::Execute_Interact(FocusedActor, MyPawn);
 
-	DefaultWidgetInstance->Destruct();
+			DefaultWidgetInstance->Destruct();
+		}
 
+	}
 }

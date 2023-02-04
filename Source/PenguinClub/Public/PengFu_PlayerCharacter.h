@@ -14,6 +14,7 @@ class US_AttributeComponent;
 class US_ActionComponent;
 class US_DynamicCollision_Component;
 class UBoxComponent;
+class AS_Bringable_Box;
 
 UCLASS()
 class PENGUINCLUB_API APengFu_PlayerCharacter : public ACharacter
@@ -71,6 +72,12 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	    bool bIsSliding;
+	
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+		bool bObjectTaken;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+		bool bIsBringingObject;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
 		meta = (AllowPrivateAccess = "true"))
@@ -93,6 +100,9 @@ public:
 
         AS_Tool* EquippedWeapon;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Movement")
+		AS_Bringable_Box* BoxTaken;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Combat")
 		TSubclassOf<AS_Tool> StandardWeapon;
 
@@ -103,6 +113,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat",meta = (AllowPrivateAccess = "true"))
 		UAnimMontage* AttackPunch_Montage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AmbientalAction", meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* BringObject_Montage;
 
 protected:
 
@@ -131,6 +143,8 @@ protected:
 
 	void Jump();
 	void JumpStop();
+
+	void LeaveBox();
 
 	AS_Tool* SpawnDefaultWeapon();
 

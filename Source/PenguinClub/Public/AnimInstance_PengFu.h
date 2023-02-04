@@ -40,6 +40,14 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
 		meta = (AllowPrivateAccess = "true"))
+		bool bObjectInHand;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+		meta = (AllowPrivateAccess = "true"))
+		bool bTaken;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement",
+		meta = (AllowPrivateAccess = "true"))
 		bool bIsSlide;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")

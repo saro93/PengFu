@@ -97,6 +97,7 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 		FCollisionQueryParams TraceSurfaceParams(FName(TEXT("TraceCharacter_SurfaceDetection")), true, Character);
 		TraceSurfaceParams.bReturnPhysicalMaterial = true;
 		TraceSurfaceParams.AddIgnoredActor(Character);
+		
 
 		bool bHitSurface = GetWorld()->LineTraceSingleByChannel(HitResultSurfaceDetection, StartTraceSurface, EndSurfaceTrace, ECollisionChannel::ECC_Visibility, TraceSurfaceParams, ResponseSurface);
 

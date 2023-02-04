@@ -20,6 +20,9 @@ public:
 
 	APawn* MyPawn;
 
+	UPROPERTY()
+		US_WorldUserWidget* DefaultWidgetInstance;
+
 protected:
 
 	void FindBestInteractable();
@@ -29,12 +32,6 @@ protected:
 	UPROPERTY()
 	AActor* FocusedActor;
 
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<US_WorldUserWidget> DefaultWidgetClass;
-
-	UPROPERTY()
-	US_WorldUserWidget* DefaultWidgetInstance;
-
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	float TraceDistance;
 
@@ -43,6 +40,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Trace")
 	TEnumAsByte<ECollisionChannel> CollisionChannel;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+		TSubclassOf<US_WorldUserWidget> DefaultWidgetClass;
 
 public:	
 
