@@ -61,24 +61,7 @@ public:
 		float SwimmingCapsuleRadius = 10;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
-		float FloorAngleUp;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
-		float FloorAngle;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
-		float FloorAngleLow;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Character Settings")
 		UCurveFloat* SlidingCurve = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Settings")
-	FVector PreviousCharacterLocation = FVector(0, 0, 1);
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Character Settings")
-	FVector CharacterLocation = FVector(0, 0, 1);
-
-	FRotator NewRotation = FRotator(0, -90, 0);
 
 	APengFu_PlayerCharacter* Character;
 

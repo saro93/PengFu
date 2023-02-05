@@ -21,6 +21,7 @@
 #include "Engine/World.h"
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
+#include "S_SlopeComponent.h"
 #include "S_Tool.h"
 #include "S_Item.h"
 #include "S_ActionComponent.h"
@@ -53,6 +54,7 @@ APengFu_PlayerCharacter::APengFu_PlayerCharacter()
 	AttributeComp = CreateDefaultSubobject<US_AttributeComponent>(TEXT("AttributeComp"));
 	ActionComp = CreateDefaultSubobject<US_ActionComponent>(TEXT("ActionComp"));
 	CollisionComp = CreateDefaultSubobject<US_DynamicCollision_Component>(TEXT("CollisionComp"));
+	SlopeComp = CreateDefaultSubobject<US_SlopeComponent>(TEXT("SlopeComp"));
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -240,7 +242,6 @@ void APengFu_PlayerCharacter::LeaveBox()
 	{
 		BoxTaken->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		bObjectTaken = false;
-		BoxTaken->SetActorEnableCollision(true);
 		BoxTaken->GetItemMesh()->SetSimulatePhysics(true);
 	}
 }

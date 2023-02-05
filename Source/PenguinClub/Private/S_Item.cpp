@@ -13,10 +13,10 @@ AS_Item::AS_Item()
 	ItemName = FString("Default");
 	ItemCount = 0;
 
-	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ItemMesh"));
+	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
 	SetRootComponent(ItemMesh);
-	CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
-	CollisionBox->SetupAttachment(ItemMesh);
+	//CollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
+	//CollisionBox->SetupAttachment(ItemMesh);
 }
 
 // Called when the game starts or when spawned

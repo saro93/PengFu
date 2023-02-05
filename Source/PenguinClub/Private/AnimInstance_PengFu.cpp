@@ -3,6 +3,7 @@
 
 #include "AnimInstance_PengFu.h"
 #include "S_DynamicCollision_Component.h"
+#include "S_SlopeComponent.h"
 #include "PengFu_PlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -36,11 +37,8 @@ void UAnimInstance_PengFu::UpdateAnimationProperties(float DeltaTime)
 		bObjectInHand = PlayerCharacter->bIsBringingObject;
 		bTaken = PlayerCharacter->bObjectTaken;
 
-		SlideTraceUp = PlayerCharacter->CollisionComp->FloorAngleUp;
-		SlideTraceLow = PlayerCharacter->CollisionComp->FloorAngleLow;
-
-		PlayerLocation = PlayerCharacter->CollisionComp->CharacterLocation;
-		PreviousPlayerLocation = PlayerCharacter->CollisionComp->PreviousCharacterLocation;
+		PlayerLocation = PlayerCharacter->SlopeComp->CharacterLocation;
+		PreviousPlayerLocation = PlayerCharacter->SlopeComp->PreviousCharacterLocation;
 
 		if (!PlayerCharacter->GetCharacterMovement()->IsFalling()) 
 		{

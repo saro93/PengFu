@@ -19,7 +19,7 @@ public:
 	AS_Item();
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "Item Proprietes",meta = (AllowPrivateAccess = "True"))
-		USkeletalMeshComponent* ItemMesh;
+		UStaticMeshComponent* ItemMesh;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly, Category = "Item Proprietes", meta = (AllowPrivateAccess = "True"))
 		int32 ItemCount;
@@ -46,7 +46,7 @@ private:
 
 public:
 
-	FORCEINLINE USkeletalMeshComponent* GetItemMesh() { return ItemMesh; }
+	FORCEINLINE UStaticMeshComponent* GetItemMesh() { return ItemMesh; }
 	FORCEINLINE UBoxComponent* GetCollisionBox() { return CollisionBox; }
 
 };

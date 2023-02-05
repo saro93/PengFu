@@ -30,7 +30,7 @@ void AS_Bringable_Box::TimerAttachment(AActor* InstigatorActor)
 		Char->bObjectTaken = true;
 		Char->bIsBringingObject = false;
 		Char->BoxTaken = this;
-		
+		Char->BoxTaken->GetItemMesh()->SetSimulatePhysics(false);
 		this->AttachToComponent(Char->GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("ObjectTaken_Socket"));
 		Char->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	}

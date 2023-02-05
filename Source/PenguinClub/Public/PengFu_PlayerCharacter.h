@@ -10,6 +10,7 @@
 class AS_Tool;
 class UCurveFloat;
 class US_InteractableComponent;
+class US_SlopeComponent;
 class US_AttributeComponent;
 class US_ActionComponent;
 class US_DynamicCollision_Component;
@@ -49,6 +50,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 		US_DynamicCollision_Component* CollisionComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		US_SlopeComponent* SlopeComp;
 
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "CollisionSwim",
 		meta = (AllowPrivateAccess = "True"))

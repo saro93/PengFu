@@ -97,7 +97,7 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 		FCollisionQueryParams TraceSurfaceParams(FName(TEXT("TraceCharacter_SurfaceDetection")), true, Character);
 		TraceSurfaceParams.bReturnPhysicalMaterial = true;
 		TraceSurfaceParams.AddIgnoredActor(Character);
-		
+
 
 		bool bHitSurface = GetWorld()->LineTraceSingleByChannel(HitResultSurfaceDetection, StartTraceSurface, EndSurfaceTrace, ECollisionChannel::ECC_Visibility, TraceSurfaceParams, ResponseSurface);
 
@@ -111,83 +111,10 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 				Character->bIsSwimming = true;
 				SwimmingTime.Play();
 			}
-			else if(!Character->GetCharacterMovement()->IsFalling() && !Character->bIsSliding && !SlidingTime.IsPlaying() && !JumpingTime.IsReversing()) {
+			else if (!Character->GetCharacterMovement()->IsFalling() && !Character->bIsSliding && !SlidingTime.IsPlaying() && !JumpingTime.IsReversing()) {
 				Character->bIsSwimming = false;
 				SwimmingTime.Reverse();
 			}
-		}
-
-		//MESH ROTATION BASED ON FLOOR ANGLE WHEN SLIDING
-		if (Character->bIsSliding) {
-
-			FName LowerBone = "TraceLow_Loc";
-
-			FVector LowerLocation = Character->GetMesh()->GetSocketLocation(LowerBone) + FVector(0,0,20);
-
-			FHitResult HitResultLow; // Trace LowerBody
-
-			FCollisionQueryParams TraceParams(FName(TEXT("UpperBody_FloorTrace")), true, Character);
-			TraceParams.bTraceComplex = false;
-			TraceParams.bReturnPhysicalMaterial = false;
-			TraceParams.AddIgnoredActor(Character);
-
-			bool bHitLower = GetWorld()->LineTraceSingleByChannel(HitResultLow, LowerLocation, LowerLocation + FVector(0, 0, -1000), ECC_Visibility, TraceParams);
-
-			if (bHitLower)
-			{
-				// Get the normal of the floor at the player's location
-				FVector FloorNormal = HitResultLow.ImpactNormal;
-				//UE_LOG(LogTemp, Warning, TEXT("The NormalUp value is: %f"), FloorNormal.X);
-
-				// Get the angle of the floor
-				FloorAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(FVector(0, 0, 1), FloorNormal)));
-
-				CharacterLocation = Character->GetActorLocation();
-
-				if (FloorAngle >= 0 && FloorAngle < 10)
-				{
-					NewRotation = FRotator(0, -90, 0);
-					SlidingMeshLocation = FVector(-15, 0, -40);
-				}
-				else if (FloorAngle >= 10 && FloorAngle < 30)
-				{
-					if (CharacterLocation.Z > PreviousCharacterLocation.Z && CharacterLocation.Z != PreviousCharacterLocation.Z) {// Going Up
-						NewRotation = FRotator(0, -90, -20);
-						SlidingMeshLocation = FVector(-5, 0, -45);
-					}
-					else if (CharacterLocation.Z != PreviousCharacterLocation.Z) {// Going Down
-						NewRotation = FRotator(0, -90, 14);
-						SlidingMeshLocation = FVector(-20, 0, -35);
-					}
-				}
-				else if (FloorAngle >= 30 && FloorAngle <= 45)
-				{
-					if (CharacterLocation.Z > PreviousCharacterLocation.Z && CharacterLocation.Z != PreviousCharacterLocation.Z) {// Going Up
-						NewRotation = FRotator(0, -90, -35);
-						SlidingMeshLocation = FVector(10, 0, -40);
-					}
-					else if (CharacterLocation.Z != PreviousCharacterLocation.Z) { // Going Down
-						NewRotation = FRotator(0, -90, 35);
-						SlidingMeshLocation = FVector(-30, 0, -30);
-					}
-				}
-
-				// Interpolate the rotation of the mesh to match the angle of the floor
-				FRotator InterpolatedRotation = FMath::RInterpTo(Character->GetMesh()->GetRelativeRotation(), NewRotation, DeltaTime, 10);
-				FVector InterpolationLocation = FMath::VInterpTo(Character->GetMesh()->GetRelativeLocation(), SlidingMeshLocation, DeltaTime, 10);
-				Character->GetMesh()->SetRelativeRotation(InterpolatedRotation);
-				Character->GetMesh()->SetRelativeLocation(InterpolationLocation);
-				
-				PreviousCharacterLocation = CharacterLocation;
-			}
-		}
-		else if (Character->GetMesh()->GetRelativeRotation() != FRotator(0, -90, 0) && !Character->GetCharacterMovement()->IsFalling() && !Character->bIsSwimming)
-		{
-			NewRotation = FRotator(0, -90, 0);
-			FRotator InterpolatedRotation = FMath::RInterpTo(Character->GetMesh()->GetRelativeRotation(), NewRotation, DeltaTime, 10);
-			FVector InterpolationLocation = FMath::VInterpTo(Character->GetMesh()->GetRelativeLocation(), DefaultMeshLocation, DeltaTime, 10);
-			Character->GetMesh()->SetRelativeRotation(InterpolatedRotation);
-			Character->GetMesh()->SetRelativeLocation(InterpolationLocation);
 		}
 	}
 }
