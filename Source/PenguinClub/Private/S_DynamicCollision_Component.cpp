@@ -19,9 +19,9 @@ US_DynamicCollision_Component::US_DynamicCollision_Component()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	DefaultCapsuleHalfHeight = 60.f;
+	DefaultCapsuleHalfHeight = 56.25f;
 
-	DefaultCapsuleRadius = 24.5f;
+	DefaultCapsuleRadius = 20.5f;
 
 	DefaultMeshLocation = FVector(0.f, 0.f, -60.f);
 
@@ -108,7 +108,10 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 			UE_LOG(LogTemp, Warning, TEXT("The Sur is: "));
 			if (HitResultSurfaceDetection.PhysMaterial->SurfaceType == SurfaceType2)
 			{
+				//HitResultSurfaceDetection.GetActor()->SetActorEnableCollision(true);
+				//Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,ECollisionResponse::ECR_Overlap);
 				Character->bIsSwimming = true;
+				Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
 			    //Character->GetCapsuleComponent()->SetSimulatePhysics(true);
 				//Character->GetCapsuleComponent()->SetEnableGravity(false);
 				SwimmingTime.Play();
