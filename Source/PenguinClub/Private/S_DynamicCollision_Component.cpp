@@ -109,6 +109,8 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 			if (HitResultSurfaceDetection.PhysMaterial->SurfaceType == SurfaceType2)
 			{
 				Character->bIsSwimming = true;
+			    //Character->GetCapsuleComponent()->SetSimulatePhysics(true);
+				//Character->GetCapsuleComponent()->SetEnableGravity(false);
 				SwimmingTime.Play();
 			}
 			else if (!Character->GetCharacterMovement()->IsFalling() && !Character->bIsSliding && !SlidingTime.IsPlaying() && !JumpingTime.IsReversing()) {

@@ -76,10 +76,12 @@ void US_Action_Jump::StopAction_Implementation(AActor* InstigatorActor)
 void US_Action_Jump::Jump_TimerElapsed(AActor* InstigatorActor)
 {
 	APengFu_PlayerCharacter* Character = Cast<APengFu_PlayerCharacter>(InstigatorActor);
-	
-		if (Character->JumpCount > 1) { GetWorld()->GetTimerManager().ClearTimer(TimerTrigger_Jump); return; }
 
-		Character->JumpCount += 1;
-		Character->LaunchCharacter(FVector(0, 0, 1000), false, false);
-		Character->CollisionComp->JumpingTime.Play();
+	if (Character->JumpCount >= 1) { GetWorld()->GetTimerManager().ClearTimer(TimerTrigger_Jump); return; }
+	if (!Character->GetCharacterMovement()->IsFalling()) 
+	{
+	   Character->JumpCount += 1;
+	   Character->LaunchCharacter(FVector(0, 0, 1000), false, false);
+	   Character->CollisionComp->JumpingTime.Play();
+    }
 }
