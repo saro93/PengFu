@@ -7,6 +7,8 @@
 #include "S_AICharacter.generated.h"
 
 class UBoxComponent;
+class US_AttributeComponent;
+class USoundCue;
 UCLASS()
 class PENGUINCLUB_API AS_AICharacter : public ACharacter
 {
@@ -37,6 +39,12 @@ public:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly, Category = "CollisionAttack",
 		meta = (AllowPrivateAccess = "True"))
 		UBoxComponent* CollisionMesh_L;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+		US_AttributeComponent* AttributeComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+		USoundCue* ImpactSound;
 
 	UFUNCTION()
 		void OnActorBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

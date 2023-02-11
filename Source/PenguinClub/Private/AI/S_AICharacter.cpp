@@ -24,6 +24,8 @@ AS_AICharacter::AS_AICharacter()
 	CollisionMesh_L->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Arm_Low_LSocket"));
 	CollisionMesh_R->AttachToComponent(GetMesh(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), TEXT("Arm_Low_RSocket"));
 
+	AttributeComp = CreateDefaultSubobject<US_AttributeComponent>(TEXT("AttributeComp"));
+	AttributeComp->Health = 100;
 	CollisionMesh_L->OnComponentBeginOverlap.AddDynamic(this, &AS_AICharacter::OnActorBeginOverlap);
 	CollisionMesh_R->OnComponentBeginOverlap.AddDynamic(this, &AS_AICharacter::OnActorBeginOverlap);
 	bIsAttacking = false;
@@ -40,6 +42,10 @@ void AS_AICharacter::BeginPlay()
 void AS_AICharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (AttributeComp->Health <= 0) {
+		Destroy();
+	}
 
 }
 

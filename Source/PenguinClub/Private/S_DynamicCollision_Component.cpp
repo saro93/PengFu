@@ -111,7 +111,7 @@ void US_DynamicCollision_Component::TickComponent(float DeltaTime, ELevelTick Ti
 				//HitResultSurfaceDetection.GetActor()->SetActorEnableCollision(true);
 				//Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn,ECollisionResponse::ECR_Overlap);
 				Character->bIsSwimming = true;
-				Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
+				//Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Swimming);
 			    //Character->GetCapsuleComponent()->SetSimulatePhysics(true);
 				//Character->GetCapsuleComponent()->SetEnableGravity(false);
 				SwimmingTime.Play();
